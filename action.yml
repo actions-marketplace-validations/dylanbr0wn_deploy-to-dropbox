@@ -21,6 +21,11 @@ inputs:
     required: false
     default: "/"
 
+  FILE_WRITE_MODE:
+    description: 'How to write files to Dropbox. "add" will add new files. "overwrite" will overwrite existing files. "/"'
+    required: false
+    default: "overwrite"
+
   DEBUG:
     description: "Enable debugging."
     required: false
