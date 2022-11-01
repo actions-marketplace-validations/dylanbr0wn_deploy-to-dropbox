@@ -69,7 +69,7 @@ async function run() {
     try {
       const res = await uploadFile(file)
       if (res) {
-        files.push()
+        files.push(res)
       }
     } catch (err) {
       const error = err as Error

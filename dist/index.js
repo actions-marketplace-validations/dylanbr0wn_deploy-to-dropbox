@@ -119,7 +119,7 @@ function run() {
                 try {
                     const res = yield uploadFile(file);
                     if (res) {
-                        files.push();
+                        files.push(res);
                     }
                 }
                 catch (err) {
