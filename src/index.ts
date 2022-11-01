@@ -24,9 +24,7 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 async function uploadFile(filePath: string) {
   const file = fs.readFileSync(filePath)
 
-  const pathSegments = filePath.split('/')
-
-  console.log(process.cwd())
+  const dropboxPath = filePath.replace(process.cwd(), '')
 
   const destinationPath = `${dropboxPathPrefix}${filePath}`
   if (isDebug) console.log('uploaded file to Dropbox at: ', destinationPath)
