@@ -71,7 +71,11 @@ async function run() {
   console.log('Uploaded files', files)
 }
 
-await run();
+run().catch(err => {
+  const error = err as Error;
+  console.error('error', err)
+  core.setFailed(error);
+});
 
 
 
