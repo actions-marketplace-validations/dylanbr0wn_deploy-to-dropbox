@@ -1,4 +1,4 @@
-name: 'dropbox-uploader'
+name: 'dropbox-file-uploader'
 description: 'This action will handle the deployment process of your project to Dropbox.'
 author: 'aTable'
 branding:
