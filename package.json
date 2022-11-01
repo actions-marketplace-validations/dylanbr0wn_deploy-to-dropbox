@@ -2,16 +2,20 @@
   "name": "deploy-to-dropbox",
   "version": "1.0.0",
   "description": "A GitHub Action to deploy to Dropbox",
-  "main": "dist/index.js",
+  "main": "lib/index.js",
+  "private": true,
   "scripts": {
-    "build": "tsc && ncc build lib/index.js -o dist",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "format": "prettier --write **/*.ts",
+    "format-check": "prettier --check **/*.ts",
+    "package": "ncc build --source-map --license licenses.txt",
+    "all": "npm run build && npm run format && npm run package"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/aTable/deploy-to-dropbox.git"
   },
-  "author": "",
+  "author": "dylanbr0wn",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/aTable/deploy-to-dropbox/issues"
@@ -23,9 +27,9 @@
     "@actions/glob": "^0.3.0",
     "@actions/http-client": "^2.0.1",
     "@types/node": "^18.11.9",
-    "@types/node-fetch": "^2.6.2",
     "@vercel/ncc": "^0.34.0",
     "dropbox": "^10.33.0",
+    "prettier": "^2.7.1",
     "tsup": "^6.3.0",
     "typescript": "^4.8.4"
   }

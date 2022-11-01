@@ -1,5 +1,152 @@
-/******/ (() => { // webpackBootstrap
+require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
+
+/***/ 4822:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __asyncValues = (this && this.__asyncValues) || function (o) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var m = o[Symbol.asyncIterator], i;
+    return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
+    function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
+    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const dropbox_1 = __nccwpck_require__(8939);
+const fs_1 = __importDefault(__nccwpck_require__(7147));
+const core = __importStar(__nccwpck_require__(2186));
+const glob_1 = __importDefault(__nccwpck_require__(8090));
+const accessToken = core.getInput('DROPBOX_ACCESS_TOKEN');
+const globSource = core.getInput('GLOB');
+const dropboxPathPrefix = core.getInput('DROPBOX_DESTINATION_PATH_PREFIX');
+const isDebug = core.getInput('DEBUG');
+const dropbox = new dropbox_1.Dropbox({ accessToken });
+const fileWriteMode = core.getInput('FILE_WRITE_MODE');
+let parsedFileWriteMode;
+if (fileWriteMode === 'overwrite') {
+    parsedFileWriteMode = { '.tag': 'overwrite' };
+}
+else {
+    parsedFileWriteMode = { '.tag': 'add' };
+}
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+function uploadFile(filePath) {
+    var _a;
+    return __awaiter(this, void 0, void 0, function* () {
+        const file = fs_1.default.readFileSync(filePath);
+        const destinationPath = `${dropboxPathPrefix}${filePath}`;
+        if (isDebug)
+            console.log('uploaded file to Dropbox at: ', destinationPath);
+        let max_retry = 5;
+        let retry = 0;
+        let wait = 0;
+        while (1) {
+            try {
+                return yield dropbox.filesUpload({
+                    path: destinationPath,
+                    contents: file,
+                    mode: parsedFileWriteMode,
+                });
+            }
+            catch (err) {
+                let error = err;
+                if (((_a = error === null || error === void 0 ? void 0 : error.error) === null || _a === void 0 ? void 0 : _a['.tag']) === 'too_many_write_operations') {
+                    if (retry < max_retry) {
+                        wait = error.headers['Retry-After'];
+                        console.log('Too many write operations, retrying in ', delay, ' seconds');
+                        yield delay(wait * 1000);
+                        retry += 1;
+                    }
+                    else {
+                        throw err;
+                    }
+                }
+                else {
+                    throw err;
+                }
+            }
+        }
+    });
+}
+function run() {
+    var e_1, _a;
+    return __awaiter(this, void 0, void 0, function* () {
+        const files = [];
+        console.log(globSource);
+        const source = globSource.split(',').join('\n');
+        console.log(source);
+        const globber = yield glob_1.default.create(source);
+        try {
+            for (var _b = __asyncValues(globber.globGenerator()), _c; _c = yield _b.next(), !_c.done;) {
+                const file = _c.value;
+                try {
+                    const res = yield uploadFile(file);
+                    if (res) {
+                        files.push();
+                    }
+                }
+                catch (err) {
+                    const error = err;
+                    console.error('error', err);
+                    core.setFailed(error);
+                }
+            }
+        }
+        catch (e_1_1) { e_1 = { error: e_1_1 }; }
+        finally {
+            try {
+                if (_c && !_c.done && (_a = _b.return)) yield _a.call(_b);
+            }
+            finally { if (e_1) throw e_1.error; }
+        }
+        console.log('Uploaded files', files);
+    });
+}
+run().catch((err) => {
+    const error = err;
+    console.error('error', err);
+    core.setFailed(error);
+});
+
+
+/***/ }),
 
 /***/ 7351:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
@@ -3252,16 +3399,15 @@ var isArray = Array.isArray || function (xs) {
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
-var __webpack_unused_export__;
 
 
-__webpack_unused_export__ = ({
+Object.defineProperty(exports, "__esModule", ({
   value: true
-});
+}));
 
 var _dropbox = __nccwpck_require__(6258);
 
-Object.defineProperty(exports, "d8", ({
+Object.defineProperty(exports, "Dropbox", ({
   enumerable: true,
   get: function get() {
     return _dropbox["default"];
@@ -3270,30 +3416,30 @@ Object.defineProperty(exports, "d8", ({
 
 var _auth = __nccwpck_require__(2361);
 
-__webpack_unused_export__ = ({
+Object.defineProperty(exports, "DropboxAuth", ({
   enumerable: true,
   get: function get() {
     return _auth["default"];
   }
-});
+}));
 
 var _response = __nccwpck_require__(4201);
 
-__webpack_unused_export__ = ({
+Object.defineProperty(exports, "DropboxResponse", ({
   enumerable: true,
   get: function get() {
     return _response.DropboxResponse;
   }
-});
+}));
 
 var _error = __nccwpck_require__(178);
 
-__webpack_unused_export__ = ({
+Object.defineProperty(exports, "DropboxResponseError", ({
   enumerable: true,
   get: function get() {
     return _error.DropboxResponseError;
   }
-});
+}));
 
 /***/ }),
 
@@ -14296,174 +14442,18 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 /******/ 	}
 /******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__nccwpck_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__nccwpck_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
-/******/ 		__nccwpck_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__nccwpck_require__.o(definition, key) && !__nccwpck_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__nccwpck_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/make namespace object */
-/******/ 	(() => {
-/******/ 		// define __esModule on exports
-/******/ 		__nccwpck_require__.r = (exports) => {
-/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 			}
-/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 		};
-/******/ 	})();
-/******/ 	
 /******/ 	/* webpack/runtime/compat */
 /******/ 	
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be in strict mode.
-(() => {
-"use strict";
-__nccwpck_require__.r(__webpack_exports__);
-/* harmony import */ var dropbox__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(8939);
-/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(7147);
-/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__nccwpck_require__.n(fs__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(2186);
-/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__nccwpck_require__.n(_actions_core__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _actions_glob__WEBPACK_IMPORTED_MODULE_3__ = __nccwpck_require__(8090);
-/* harmony import */ var _actions_glob__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__nccwpck_require__.n(_actions_glob__WEBPACK_IMPORTED_MODULE_3__);
-var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __asyncValues = (undefined && undefined.__asyncValues) || function (o) {
-    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
-    var m = o[Symbol.asyncIterator], i;
-    return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
-    function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
-    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
-};
-
-
-
-
-const accessToken = _actions_core__WEBPACK_IMPORTED_MODULE_2__.getInput('DROPBOX_ACCESS_TOKEN');
-const globSource = _actions_core__WEBPACK_IMPORTED_MODULE_2__.getInput('GLOB');
-const dropboxPathPrefix = _actions_core__WEBPACK_IMPORTED_MODULE_2__.getInput('DROPBOX_DESTINATION_PATH_PREFIX');
-const isDebug = _actions_core__WEBPACK_IMPORTED_MODULE_2__.getInput('DEBUG');
-const dropbox = new dropbox__WEBPACK_IMPORTED_MODULE_0__/* .Dropbox */ .d8({ accessToken });
-const fileWriteMode = _actions_core__WEBPACK_IMPORTED_MODULE_2__.getInput('FILE_WRITE_MODE');
-let parsedFileWriteMode;
-if (fileWriteMode === "overwrite") {
-    parsedFileWriteMode = { '.tag': "overwrite" };
-}
-else {
-    parsedFileWriteMode = { '.tag': "add" };
-}
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-function uploadFile(filePath) {
-    var _a;
-    return __awaiter(this, void 0, void 0, function* () {
-        const file = fs__WEBPACK_IMPORTED_MODULE_1___default().readFileSync(filePath);
-        const destinationPath = `${dropboxPathPrefix}${filePath}`;
-        if (isDebug)
-            console.log('uploaded file to Dropbox at: ', destinationPath);
-        let max_retry = 5;
-        let retry = 0;
-        let wait = 0;
-        while (1) {
-            try {
-                return yield dropbox
-                    .filesUpload({ path: destinationPath, contents: file, mode: parsedFileWriteMode });
-            }
-            catch (err) {
-                let error = err;
-                if (((_a = error === null || error === void 0 ? void 0 : error.error) === null || _a === void 0 ? void 0 : _a['.tag']) === "too_many_write_operations") {
-                    if (retry < max_retry) {
-                        wait = error.headers['Retry-After'];
-                        console.log("Too many write operations, retrying in ", delay, " seconds");
-                        yield delay(wait * 1000);
-                        retry += 1;
-                    }
-                    else {
-                        throw err;
-                    }
-                }
-                else {
-                    throw err;
-                }
-            }
-        }
-    });
-}
-function run() {
-    var e_1, _a;
-    return __awaiter(this, void 0, void 0, function* () {
-        const files = [];
-        console.log(globSource);
-        const source = globSource.split(',').join('\n');
-        console.log(source);
-        const globber = yield _actions_glob__WEBPACK_IMPORTED_MODULE_3___default().create(source);
-        try {
-            for (var _b = __asyncValues(globber.globGenerator()), _c; _c = yield _b.next(), !_c.done;) {
-                const file = _c.value;
-                try {
-                    const res = yield uploadFile(file);
-                    if (res) {
-                        files.push();
-                    }
-                }
-                catch (err) {
-                    const error = err;
-                    console.error('error', err);
-                    _actions_core__WEBPACK_IMPORTED_MODULE_2__.setFailed(error);
-                }
-            }
-        }
-        catch (e_1_1) { e_1 = { error: e_1_1 }; }
-        finally {
-            try {
-                if (_c && !_c.done && (_a = _b.return)) yield _a.call(_b);
-            }
-            finally { if (e_1) throw e_1.error; }
-        }
-        console.log('Uploaded files', files);
-    });
-}
-run().catch(err => {
-    const error = err;
-    console.error('error', err);
-    _actions_core__WEBPACK_IMPORTED_MODULE_2__.setFailed(error);
-});
-
-})();
-
-module.exports = __webpack_exports__;
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __nccwpck_require__(4822);
+/******/ 	module.exports = __webpack_exports__;
+/******/ 	
 /******/ })()
 ;
+//# sourceMappingURL=index.js.map
