@@ -23,6 +23,11 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 async function uploadFile(filePath: string) {
   const file = fs.readFileSync(filePath)
+
+  const pathSegments = filePath.split('/')
+
+  console.log(process.cwd())
+
   const destinationPath = `${dropboxPathPrefix}${filePath}`
   if (isDebug) console.log('uploaded file to Dropbox at: ', destinationPath)
   let max_retry = 5
@@ -61,7 +66,7 @@ async function uploadFile(filePath: string) {
 async function run() {
   const files: DropboxResponse<files.FileMetadata>[] = []
   const source = globSource.split(',').join('\n')
-  const globber = await create(source)
+  const globber = await create(source, {})
   for await (const file of globber.globGenerator()) {
     try {
       const res = await uploadFile(file)
