@@ -1,6 +1,6 @@
 name: 'dropbox-file-uploader'
 description: 'This action will handle the deployment process of your project to Dropbox.'
-author: 'aTable'
+author: 'dylanbr0wn'
 branding:
   icon: 'upload-cloud'
   color: 'black'
