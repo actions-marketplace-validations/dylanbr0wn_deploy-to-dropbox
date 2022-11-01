@@ -53,8 +53,9 @@ async function uploadFile(filePath: string){
 
 async function run() {
   const files: DropboxResponse<files.FileMetadata>[] = []
-  console.log(glob);
+  console.log(globSource);
   const source = globSource.split(',').join('\n')
+  console.log(source);
   const globber = await glob.create(source)
   for await (const file of globber.globGenerator()) {
     try {
