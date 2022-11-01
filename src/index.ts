@@ -1,7 +1,7 @@
 import {Dropbox, DropboxResponse, DropboxResponseError, files} from 'dropbox'
 import fs from 'fs'
 import * as core from '@actions/core'
-import glob from '@actions/glob'
+import {create} from '@actions/glob'
 
 const accessToken = core.getInput('DROPBOX_ACCESS_TOKEN')
 const globSource = core.getInput('GLOB')
@@ -58,10 +58,8 @@ async function uploadFile(filePath: string) {
 
 async function run() {
   const files: DropboxResponse<files.FileMetadata>[] = []
-  console.log(globSource)
   const source = globSource.split(',').join('\n')
-  console.log(source)
-  const globber = await glob.create(source)
+  const globber = await create(source)
   for await (const file of globber.globGenerator()) {
     try {
       const res = await uploadFile(file)

@@ -52,7 +52,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const dropbox_1 = __nccwpck_require__(8939);
 const fs_1 = __importDefault(__nccwpck_require__(7147));
 const core = __importStar(__nccwpck_require__(2186));
-const glob_1 = __importDefault(__nccwpck_require__(8090));
+const glob_1 = __nccwpck_require__(8090);
 const accessToken = core.getInput('DROPBOX_ACCESS_TOKEN');
 const globSource = core.getInput('GLOB');
 const dropboxPathPrefix = core.getInput('DROPBOX_DESTINATION_PATH_PREFIX');
@@ -109,10 +109,8 @@ function run() {
     var e_1, _a;
     return __awaiter(this, void 0, void 0, function* () {
         const files = [];
-        console.log(globSource);
         const source = globSource.split(',').join('\n');
-        console.log(source);
-        const globber = yield glob_1.default.create(source);
+        const globber = yield (0, glob_1.create)(source);
         try {
             for (var _b = __asyncValues(globber.globGenerator()), _c; _c = yield _b.next(), !_c.done;) {
                 const file = _c.value;
