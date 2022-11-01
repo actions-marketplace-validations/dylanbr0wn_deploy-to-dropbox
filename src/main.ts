@@ -1,15 +1,15 @@
 import {Dropbox, DropboxResponse, DropboxResponseError, files} from 'dropbox'
 import fs from 'fs'
-import fetch2 from 'node-fetch'
 import * as core from '@actions/core'
 import github from '@actions/github'
 import glob from '@actions/glob'
+import http from '@actions/http-client'
 
 const accessToken = core.getInput('DROPBOX_ACCESS_TOKEN')
 const globSource = core.getInput('GLOB')
 const dropboxPathPrefix = core.getInput('DROPBOX_DESTINATION_PATH_PREFIX')
 const isDebug = core.getInput('DEBUG')
-const dropbox = new Dropbox({accessToken, fetch: fetch2})
+const dropbox = new Dropbox({accessToken})
 const fileWriteMode = core.getInput('FILE_WRITE_MODE')
 
 let parsedFileWriteMode: files.WriteMode;
