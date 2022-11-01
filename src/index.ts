@@ -26,7 +26,7 @@ async function uploadFile(filePath: string) {
 
   const dropboxPath = filePath.replace(process.cwd(), '')
 
-  const destinationPath = `${dropboxPathPrefix}${filePath}`
+  const destinationPath = `${dropboxPathPrefix}${dropboxPath}`
   if (isDebug) console.log('uploaded file to Dropbox at: ', destinationPath)
   let max_retry = 5
   let retry = 0
