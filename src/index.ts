@@ -4,7 +4,7 @@ import * as core from '@actions/core'
 import {create} from '@actions/glob'
 
 const accessToken = core.getInput('DROPBOX_ACCESS_TOKEN')
-const secret = core.getInput('DROPBOX_ACCESS_TOKEN')
+const secret = core.getInput('DROPBOX_SECRET')
 const globSource = core.getInput('GLOB')
 const dropboxPathPrefix = core.getInput('DROPBOX_DESTINATION_PATH_PREFIX')
 const isDebug = core.getInput('DEBUG')

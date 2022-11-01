@@ -11,6 +11,10 @@ inputs:
   DROPBOX_ACCESS_TOKEN:
     description: 'Value should be a secret that is set in your repository settings'
     required: true
+    
+  DROPBOX_SECRET:
+    description: 'Value should be a secret that is set in your repository settings'
+    required: true
 
   GLOB: 
     description: 'Glob that you want to save to Dropbox e.g dir1/dir2/**/*.md or **/*.txt'
