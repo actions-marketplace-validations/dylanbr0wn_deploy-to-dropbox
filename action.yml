@@ -13,7 +13,11 @@ inputs:
     required: true
     
   DROPBOX_SECRET:
-    description: 'Value should be a secret that is set in your repository settings'
+    description: 'Your Dropbox app secret. Value should be a secret that is set in your repository settings'
+    required: true
+  
+  DROPBOX_CLIENT_ID:
+    description: 'Your Dropbox app client ID. Value should be a secret that is set in your repository settings'
     required: true
 
   GLOB: 

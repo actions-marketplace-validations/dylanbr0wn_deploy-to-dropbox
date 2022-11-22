@@ -53,13 +53,14 @@ const dropbox_1 = __nccwpck_require__(8939);
 const fs_1 = __importDefault(__nccwpck_require__(7147));
 const core = __importStar(__nccwpck_require__(2186));
 const glob_1 = __nccwpck_require__(8090);
+const clientId = core.getInput('DROPBOX_CLIENT_ID');
 const accessToken = core.getInput('DROPBOX_ACCESS_TOKEN');
 const secret = core.getInput('DROPBOX_SECRET');
 const globSource = core.getInput('GLOB');
 const dropboxPathPrefix = core.getInput('DROPBOX_DESTINATION_PATH_PREFIX');
 const isDebug = core.getInput('DEBUG');
 const fileWriteMode = core.getInput('FILE_WRITE_MODE');
-const dropbox = new dropbox_1.Dropbox({ accessToken, clientSecret: secret });
+const dropbox = new dropbox_1.Dropbox({ accessToken, clientSecret: secret, clientId });
 let parsedFileWriteMode;
 if (fileWriteMode === 'overwrite') {
     parsedFileWriteMode = { '.tag': 'overwrite' };

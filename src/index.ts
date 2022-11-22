@@ -3,6 +3,7 @@ import fs from 'fs'
 import * as core from '@actions/core'
 import {create} from '@actions/glob'
 
+const clientId = core.getInput('DROPBOX_CLIENT_ID')
 const accessToken = core.getInput('DROPBOX_ACCESS_TOKEN')
 const secret = core.getInput('DROPBOX_SECRET')
 const globSource = core.getInput('GLOB')
@@ -10,7 +11,7 @@ const dropboxPathPrefix = core.getInput('DROPBOX_DESTINATION_PATH_PREFIX')
 const isDebug = core.getInput('DEBUG')
 const fileWriteMode = core.getInput('FILE_WRITE_MODE')
 
-const dropbox = new Dropbox({accessToken, clientSecret: secret})
+const dropbox = new Dropbox({accessToken, clientSecret: secret, clientId})
 
 let parsedFileWriteMode: files.WriteMode
 if (fileWriteMode === 'overwrite') {
